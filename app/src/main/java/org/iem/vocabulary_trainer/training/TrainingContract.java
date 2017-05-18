@@ -1,4 +1,10 @@
 package org.iem.vocabulary_trainer.training;
 
-public class TrainingContract {
+class TrainingContract {
+
+    interface View {
+    }
+
+    interface Presenter {
+    }
 }
