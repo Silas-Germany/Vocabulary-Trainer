@@ -3,7 +3,7 @@ package org.iem.vocabulary_trainer.training;
 import android.content.Context;
 
 class TrainingPresenter implements TrainingContract.Presenter {
-    private static final String LOG_TAG = "LCIRO_" + TrainingPresenter.class.getSimpleName();
+    private static final String LOG_TAG = "VT_" + TrainingPresenter.class.getSimpleName();
 
     // init
     private static TrainingContract.View mView = null;
