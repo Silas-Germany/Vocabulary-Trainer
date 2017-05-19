@@ -18,7 +18,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
     private static final String LOG_TAG = "VT_" + Database.class.getSimpleName();
 
     // database settings
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "vocabulary.db";
     private static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -35,7 +35,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
     // create-table commands
     private static final String USER_TABLE_CREATE =
             "CREATE TABLE " + Vocabs.TABLE_NAME + " (" +
-                    Vocabs._ID + " INTEGER PRIMARY KEY NOT NULL, " +
+                    Vocabs._ID + " INTEGER PRIMARY KEY, " +
                     Vocabs.ORIGIN_FIELD + " TEXT NOT NULL, " +
                     Vocabs.TRANSLATION_FIELD + " TEXT NOT NULL, " +
                     Vocabs.CREATED_AT_FIELD + " INTEGER, " +
@@ -68,7 +68,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
         // get entries
         Cursor vocabEntry = db.query(
                 Vocabs.TABLE_NAME,
-                new String[] {Vocabs.ORIGIN_FIELD, Vocabs.TRANSLATION_FIELD,
+                new String[] {Vocabs._ID, Vocabs.ORIGIN_FIELD, Vocabs.TRANSLATION_FIELD,
                         Vocabs.CREATED_AT_FIELD, Vocabs.BOX_FIELD, Vocabs.LAST_LEARNED_FIELD},
                 null, null, null, null, null
         );
@@ -92,7 +92,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
                     newEntry.lastLearned = vocabEntry.getInt(index);
                     result.add(newEntry);
                 } catch (IllegalArgumentException e) {
-                    Log.e(LOG_TAG, "Vocabulary column missing");
+                    Log.e(LOG_TAG, "Vocabulary column missing", e);
                 }
             }
         }
@@ -109,26 +109,33 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
         for (int i = 0; i < entries.size(); i++) {
             givenIds[i] = Integer.toString(entries.get(i).id);
         }
-        Cursor existingEntry = db.query(
-                Vocabs.TABLE_NAME,
-                new String[]{Vocabs._ID},
-                Vocabs._ID + " = ?",
-                givenIds,
-                null, null, null
-        );
+        Cursor existingEntry = null;
+        try {
+            existingEntry = db.query(
+                    Vocabs.TABLE_NAME,
+                    new String[]{Vocabs._ID},
+                    Vocabs._ID + " = ?",
+                    givenIds,
+                    null, null, null
+            );
+        } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, "Couldn't load existing entries", e);
+        }
         // make a list of those ids
         List<Integer> savedIds = new ArrayList<>();
-        if (existingEntry.getCount() != 0) {
+        if (existingEntry != null && existingEntry.getCount() != 0) {
             for (existingEntry.moveToFirst(); !existingEntry.isAfterLast(); existingEntry.moveToNext()) {
                 try {
                     int index = existingEntry.getColumnIndexOrThrow(Vocabs._ID);
                     savedIds.add(existingEntry.getInt(index));
                 } catch (IllegalArgumentException e) {
-                    Log.e(LOG_TAG, "ID column from existing entries missing");
+                    Log.e(LOG_TAG, "ID column from existing entries missing", e);
                 }
             }
         }
-        // delete entry, that has -1 as ID
+        if (existingEntry != null) existingEntry.close();
+        // delete entry, that has -1 as ID (just in case - otherwise it might not distinguish
+        // correctly between create and update)
         if (savedIds.contains(-1)) {
             db.delete(Vocabs.TABLE_NAME,
                     Vocabs._ID + " = ?",
@@ -138,7 +145,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
         for (Vocab entry : entries) {
             ContentValues values = new ContentValues();
             if (entry.origin != null) values.put(Vocabs.ORIGIN_FIELD, entry.origin);
-            if (entry.translation != null) values.put(Vocabs.ORIGIN_FIELD, entry.origin);
+            if (entry.translation != null) values.put(Vocabs.TRANSLATION_FIELD, entry.translation);
             if (entry.createdAt != -1) values.put(Vocabs.CREATED_AT_FIELD, entry.createdAt);
             if (entry.box != -1) values.put(Vocabs.BOX_FIELD, entry.box);
             if (entry.lastLearned != -1) values.put(Vocabs.LAST_LEARNED_FIELD, entry.lastLearned);
@@ -157,13 +164,12 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
                 } else {
                     // This entry isn't in storage yet so use insert
                     if (entryId != -1) values.put(Vocabs._ID, entryId);
+                    entryId = (int) db.insertOrThrow(Vocabs.TABLE_NAME, null, values);
                     Log.d(LOG_TAG, "Adding entry: " + entryId);
-                    db.insertOrThrow(Vocabs.TABLE_NAME, null, values);
                 }
             } catch (SQLException e) {
-                Log.e(LOG_TAG, "Couldn't save entry");
+                Log.e(LOG_TAG, "Couldn't save entry", e);
             }
         }
-        existingEntry.close();
     }
 }

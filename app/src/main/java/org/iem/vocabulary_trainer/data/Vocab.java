@@ -8,7 +8,7 @@ public class Vocab {
 
     public String translation = null;
 
-    public int box = -1;
+    public int box = 0;
 
     public int lastLearned = -1;
 

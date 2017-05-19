@@ -1,6 +1,7 @@
 package org.iem.vocabulary_trainer.utils;
 
 import android.app.Application;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class GlobalData extends Application {
@@ -16,5 +17,22 @@ public class GlobalData extends Application {
 
         // init classes
         sDatabase = new Database(getApplicationContext());
+
+        // init uncaught exception handler
+        final Thread.UncaughtExceptionHandler defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                Log.w(LOG_TAG, "Uncaught error: ", e);
+                if (defaultHandler != null) {
+                    defaultHandler.uncaughtException(t, e);
+                }
+            }
+        });
+    }
+
+    // returns a minute-exact timestamp according to the system running time - that many minutes
+    public static int getTimestamp() {
+        return (int) (SystemClock.elapsedRealtime() / 1000 / 60);
     }
 }
