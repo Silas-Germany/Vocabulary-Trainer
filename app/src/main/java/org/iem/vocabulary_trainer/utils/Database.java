@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import org.iem.vocabulary_trainer.data.Vocab;
+import org.iem.vocabulary_trainer.data.BasicVocabData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
     // database settings
     private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "vocabulary.db";
-    private static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd";
 
     // database tables
     private static final class Vocabs implements BaseColumns {
@@ -63,7 +62,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
 
     // returns all vocabulary data from the database
     @Override
-    public List<Vocab> getAllVocabulary() {
+    public List<BasicVocabData> getAllBasicVocabData() {
         SQLiteDatabase db = this.getReadableDatabase();
         // get entries
         Cursor vocabEntry = db.query(
@@ -73,23 +72,17 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
                 null, null, null, null, null
         );
         // extract data from entries
-        List<Vocab> result = new ArrayList<>();
+        List<BasicVocabData> result = new ArrayList<>();
         if (vocabEntry.getCount() != 0) {
             for (vocabEntry.moveToFirst(); !vocabEntry.isAfterLast(); vocabEntry.moveToNext()) {
                 try {
-                    Vocab newEntry = new Vocab();
+                    BasicVocabData newEntry = new BasicVocabData();
                     int index = vocabEntry.getColumnIndexOrThrow(Vocabs._ID);
                     newEntry.id = vocabEntry.getInt(index);
                     index = vocabEntry.getColumnIndexOrThrow(Vocabs.ORIGIN_FIELD);
                     newEntry.origin = vocabEntry.getString(index);
                     index = vocabEntry.getColumnIndexOrThrow(Vocabs.TRANSLATION_FIELD);
                     newEntry.translation = vocabEntry.getString(index);
-                    index = vocabEntry.getColumnIndexOrThrow(Vocabs.CREATED_AT_FIELD);
-                    newEntry.createdAt = vocabEntry.getInt(index);
-                    index = vocabEntry.getColumnIndexOrThrow(Vocabs.BOX_FIELD);
-                    newEntry.box = vocabEntry.getInt(index);
-                    index = vocabEntry.getColumnIndexOrThrow(Vocabs.LAST_LEARNED_FIELD);
-                    newEntry.lastLearned = vocabEntry.getInt(index);
                     result.add(newEntry);
                 } catch (IllegalArgumentException e) {
                     Log.e(LOG_TAG, "Vocabulary column missing", e);
@@ -102,7 +95,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
 
     // saves/updates the entries in the database (updates, if id matches)
     @Override
-    public void saveEntries(List<Vocab> entries) {
+    public void saveBasicEntries(List<BasicVocabData> entries) {
         SQLiteDatabase db = this.getWritableDatabase();
         // get saved entries
         String[] givenIds = new String[entries.size()];
@@ -142,13 +135,10 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
                     new String[] {Integer.toString(-1)});
         }
         // save or update all entries
-        for (Vocab entry : entries) {
+        for (BasicVocabData entry : entries) {
             ContentValues values = new ContentValues();
             if (entry.origin != null) values.put(Vocabs.ORIGIN_FIELD, entry.origin);
             if (entry.translation != null) values.put(Vocabs.TRANSLATION_FIELD, entry.translation);
-            if (entry.createdAt != -1) values.put(Vocabs.CREATED_AT_FIELD, entry.createdAt);
-            if (entry.box != -1) values.put(Vocabs.BOX_FIELD, entry.box);
-            if (entry.lastLearned != -1) values.put(Vocabs.LAST_LEARNED_FIELD, entry.lastLearned);
 
             try {
                 int entryId = entry.id;
@@ -164,6 +154,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
                 } else {
                     // This entry isn't in storage yet so use insert
                     if (entryId != -1) values.put(Vocabs._ID, entryId);
+                    values.put(Vocabs.CREATED_AT_FIELD, GlobalData.getTimestamp());
                     entryId = (int) db.insertOrThrow(Vocabs.TABLE_NAME, null, values);
                     Log.d(LOG_TAG, "Adding entry: " + entryId);
                 }

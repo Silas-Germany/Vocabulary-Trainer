@@ -6,7 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.iem.vocabulary_trainer.R;
-import org.iem.vocabulary_trainer.data.Vocab;
+import org.iem.vocabulary_trainer.data.BasicVocabData;
+import org.iem.vocabulary_trainer.data.TrainingData;
 import org.iem.vocabulary_trainer.utils.GlobalData;
 
 import java.util.ArrayList;
@@ -16,10 +17,10 @@ import java.util.Random;
 class TrainingPresenter implements TrainingContract.Presenter {
     private static final String LOG_TAG = "VT_" + TrainingPresenter.class.getSimpleName();
 
-    private List<Vocab> mVocabEntries = new ArrayList<>();
-    private List<Integer> mAskedEntries = new ArrayList<>();
-    private boolean mIsAnswer = false;
-    private int mAllAskedEntriesAmount = 0;
+    private List<TrainingData> mVocabData = new ArrayList<>();
+    private int actualEntry = -1;
+    private int mSumAskedEntries = 0;
+
     private static final int[] BOXES_VALUES = {5, 15, 25, 35, 45};
     private static final int MINIMAL_DISTANCE = 4;
 
@@ -32,18 +33,18 @@ class TrainingPresenter implements TrainingContract.Presenter {
         mContext = context;
 
         if (GlobalData.sDatabase != null){
-            mVocabEntries = GlobalData.sDatabase.getAllVocabulary();
+            for (BasicVocabData vocabData : GlobalData.sDatabase.getAllBasicVocabData()) {
+                TrainingData newEntry = new TrainingData();
+                newEntry.basicVocabData = vocabData;
+                mVocabData.add(newEntry);
+            }
         }
     }
 
     // starts the training through showing the questionable vocabulary
     @Override
     public void startTraining() {
-        if (mIsAnswer) {
-            Log.e(LOG_TAG, "Shouldn't be an answer");
-            return;
-        }
-        if (mVocabEntries.size() == 0) {
+        if (mVocabData.size() == 0) {
             Log.e(LOG_TAG, "No Vocabulary saved");
             seedEntries();
             return;
@@ -63,7 +64,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
                 }
             }
         }
-        if (!mView.writeVocab(getActualVocab().origin, mIsAnswer)) {
+        if (!mView.writeVocab(getActualVocab().origin, false)) {
             Log.e(LOG_TAG, "Error writing vocabulary");
         }
     }
@@ -71,16 +72,11 @@ class TrainingPresenter implements TrainingContract.Presenter {
     // writes the answer
     @Override
     public void showAnswer() {
-        if (mVocabEntries.size() == 0) {
+        if (mVocabData.size() == 0) {
             Log.e(LOG_TAG, "No Vocabulary saved");
             return;
         }
-        if (mIsAnswer) {
-            Log.e(LOG_TAG, "Shouldn't be an answer");
-            return;
-        }
-        mIsAnswer = true;
-        if (!mView.writeVocab(getActualVocab().translation, mIsAnswer)) {
+        if (!mView.writeVocab(getActualVocab().translation, true)) {
             Log.e(LOG_TAG, "Error writing vocabulary");
         }
     }
@@ -88,18 +84,15 @@ class TrainingPresenter implements TrainingContract.Presenter {
     // saves changes and starts next vocabulary
     @Override
     public void vocabAnswered(boolean wasRight) {
-        if (!mIsAnswer) {
-            Log.e(LOG_TAG, "Should be an answer");
-            return;
+        mVocabData.get(actualEntry).box += wasRight? 1 : -1;
+        if (!wasRight) mVocabData.get(actualEntry).mistakes++;
+        mVocabData.get(actualEntry).asked++;
+        if (getActualVocabData().box < 1) {
+            mVocabData.get(actualEntry).box = 1;
         }
-        mIsAnswer = false;
-        mVocabEntries.get(getActualVocabIndex()).box += wasRight? 1 : -1;
-        if (getActualVocab().box < 0) {
-            mVocabEntries.get(getActualVocabIndex()).box = 0;
-        }
-        Log.d(LOG_TAG, "Vocab now in box " + getActualVocab().box);
-        mVocabEntries.get(getActualVocabIndex()).lastLearned = mAllAskedEntriesAmount;
-        mAllAskedEntriesAmount ++;
+        Log.d(LOG_TAG, "BasicVocabData now in box " + getActualVocabData().box);
+        mVocabData.get(actualEntry).lastLearned = mSumAskedEntries;
+        mSumAskedEntries++;
         startTraining();
     }
 
@@ -107,28 +100,27 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private boolean addActualVocab() {
         int newEntry;
         List<Integer> remainingEntries = new ArrayList<>();
-        for (int i = 0; i < mVocabEntries.size(); i++) {
-            if (!mAskedEntries.contains(i)) remainingEntries.add(i);
+        for (int i = 0; i < mVocabData.size(); i++) {
+            if (mVocabData.get(i).box == 0) remainingEntries.add(i);
         }
         if (remainingEntries.size() == 0) return false;
         newEntry = getRandomNumber(remainingEntries.size());
-        mAskedEntries.add(remainingEntries.get(newEntry));
+        actualEntry = newEntry;
         Log.d(LOG_TAG, "Got index " + remainingEntries.get(newEntry) + " from " + newEntry +
                 " out of " + remainingEntries.size());
         Log.d(LOG_TAG, "Asking new entry: " + getActualVocab().origin);
         return true;
     }
 
-    // returns actual vocab
-    private Vocab getActualVocab() {
-        return mVocabEntries.get(getActualVocabIndex());
+    // returns actual vocabulary
+    private BasicVocabData getActualVocab() {
+        return getActualVocabData().basicVocabData;
     }
 
-    // returns the index of the actual vocab
-    private int getActualVocabIndex() {
-        return mAskedEntries.get(mAskedEntries.size() - 1);
+    // returns actual vocabulary-data
+    private TrainingData getActualVocabData() {
+        return mVocabData.get(actualEntry);
     }
-
     // returns random number from 0 to max-1
     private int getRandomNumber (int max) {
         Random random = new Random(SystemClock.elapsedRealtime());
@@ -137,19 +129,17 @@ class TrainingPresenter implements TrainingContract.Presenter {
 
     // check, if an old entry exists, that has to be asked again
     private boolean checkForOldEntry() {
-        for (int oldEntryIndex : mAskedEntries) {
-            Vocab oldEntry = mVocabEntries.get(oldEntryIndex);
-            if (oldEntry.box < 5) {
+        for (TrainingData oldEntry : mVocabData) {
+            if (oldEntry.box > 0 && oldEntry.box < 5) {
                 // use random number between -3 and 3 for mixing stack up
                 int mixingStack = getRandomNumber(7) - 3;
-                int whenAgain = mAllAskedEntriesAmount - // e.g. 17
+                int whenAgain = mSumAskedEntries - // e.g. 17
                         BOXES_VALUES[oldEntry.box] - // e.g. 15
                         oldEntry.lastLearned + // e.g. 2
                         mixingStack;
                 // if an entry was found, make it being the actual one
                 if (whenAgain >= 0) {
-                    mAskedEntries.remove((Integer) oldEntryIndex);
-                    mAskedEntries.add(oldEntryIndex);
+                    actualEntry = mVocabData.indexOf(oldEntry);
                     Log.d(LOG_TAG, "Asking old entry: " + getActualVocab().origin);
                     return true;
                 }
@@ -163,21 +153,20 @@ class TrainingPresenter implements TrainingContract.Presenter {
         int bestValue = Integer.MAX_VALUE;
         int longestTimeEntry = -1;
         int longestTime = -1;
-        for (int oldEntryIndex : mAskedEntries) {
-            Vocab oldEntry = mVocabEntries.get(oldEntryIndex);
-            if (oldEntry.box < 5) {
+        for (TrainingData oldEntry : mVocabData) {
+            if (oldEntry.box > 0 && oldEntry.box < 5) {
                 int thisValue = BOXES_VALUES[oldEntry.box] + oldEntry.lastLearned;
                 // check, whether item was recently done and in case save separately
-                int lastDone = mAllAskedEntriesAmount - oldEntry.lastLearned;
+                int lastDone = mSumAskedEntries - oldEntry.lastLearned;
                 if (lastDone < MINIMAL_DISTANCE) {
                     if (lastDone > longestTime) {
                         longestTime = lastDone;
-                        longestTimeEntry = oldEntryIndex;
+                        longestTimeEntry = mVocabData.indexOf(oldEntry);
                     }
                 // check, for greatest value (inclusive according to the box it is in)
                 } else if (thisValue < bestValue) {
                     bestValue = thisValue;
-                    bestEntry = oldEntryIndex;
+                    bestEntry = mVocabData.indexOf(oldEntry);
                 }
             }
         }
@@ -185,15 +174,14 @@ class TrainingPresenter implements TrainingContract.Presenter {
             if (longestTimeEntry == -1) return false;
             else bestEntry = longestTimeEntry;
         }
-        mAskedEntries.remove((Integer) bestEntry);
-        mAskedEntries.add(bestEntry);
+        actualEntry = bestEntry;
         Log.d(LOG_TAG, "Asking best old entry: " + getActualVocab().origin);
         return true;
     }
 
     private int[] getBoxesAmount() {
         int[] boxesAmount = new int[6]; // default value is 0
-        for (Vocab entry : mVocabEntries) {
+        for (TrainingData entry : mVocabData) {
             if (entry.box < 0 || entry.box > 5) return null;
             boxesAmount[entry.box]++;
         }
@@ -201,48 +189,40 @@ class TrainingPresenter implements TrainingContract.Presenter {
     }
 
     private void seedEntries() {
-        List<Vocab> newEntries = new ArrayList<>();
-        Vocab newEntry = new Vocab();
+        List<BasicVocabData> newEntries = new ArrayList<>();
+        BasicVocabData newEntry = new BasicVocabData();
         newEntry.origin = "I";
         newEntry.translation = "Ich";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "You (Sg.)";
         newEntry.translation = "Du";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "He";
         newEntry.translation = "Er";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "She";
         newEntry.translation = "Sie (Sg.)";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "It";
         newEntry.translation = "Es";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "We";
         newEntry.translation = "Wir";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "You (Pl.)";
         newEntry.translation = "Ihr";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        newEntry = new Vocab();
+        newEntry = new BasicVocabData();
         newEntry.origin = "They";
         newEntry.translation = "Sie (Pl.)";
-        newEntry.createdAt = GlobalData.getTimestamp();
         newEntries.add(newEntry);
-        GlobalData.sDatabase.saveEntries(newEntries);
+        GlobalData.sDatabase.saveBasicEntries(newEntries);
         Log.d(LOG_TAG, "New entries added");
     }
 }
