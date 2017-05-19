@@ -21,7 +21,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private int actualEntry = -1;
     private int mSumAskedEntries = 0;
 
-    private static final int[] BOXES_VALUES = {5, 15, 25, 35, 45};
+    private static final int[] BOXES_VALUES = {0, 5, 15, 25, 35, 45};
     private static final int MINIMAL_DISTANCE = 4;
 
     // init
@@ -84,12 +84,14 @@ class TrainingPresenter implements TrainingContract.Presenter {
     // saves changes and starts next vocabulary
     @Override
     public void vocabAnswered(boolean wasRight) {
-        mVocabData.get(actualEntry).box += wasRight? 1 : -1;
+        // put in the correct box (from 0=stock directly to 2)
+        if (getActualVocabData().box <= 1) {
+            if (wasRight) mVocabData.get(actualEntry).box = 2;
+            else mVocabData.get(actualEntry).box = 1;
+        } else mVocabData.get(actualEntry).box += wasRight? 1 : -1;
+
         if (!wasRight) mVocabData.get(actualEntry).mistakes++;
         mVocabData.get(actualEntry).asked++;
-        if (getActualVocabData().box < 1) {
-            mVocabData.get(actualEntry).box = 1;
-        }
         Log.d(LOG_TAG, "BasicVocabData now in box " + getActualVocabData().box);
         mVocabData.get(actualEntry).lastLearned = mSumAskedEntries;
         mSumAskedEntries++;
@@ -105,7 +107,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         }
         if (remainingEntries.size() == 0) return false;
         newEntry = getRandomNumber(remainingEntries.size());
-        actualEntry = newEntry;
+        actualEntry = remainingEntries.get(newEntry);
         Log.d(LOG_TAG, "Got index " + remainingEntries.get(newEntry) + " from " + newEntry +
                 " out of " + remainingEntries.size());
         Log.d(LOG_TAG, "Asking new entry: " + getActualVocab().origin);
@@ -131,13 +133,14 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private boolean checkForOldEntry() {
         for (TrainingData oldEntry : mVocabData) {
             if (oldEntry.box > 0 && oldEntry.box < 5) {
-                // use random number between -3 and 3 for mixing stack up
-                int mixingStack = getRandomNumber(7) - 3;
+                // use random number between -4 and 4 for mixing stack up
+                int mixingStack = getRandomNumber(9) - 4;
                 int whenAgain = mSumAskedEntries - // e.g. 17
                         BOXES_VALUES[oldEntry.box] - // e.g. 15
                         oldEntry.lastLearned + // e.g. 2
                         mixingStack;
                 // if an entry was found, make it being the actual one
+                Log.d(LOG_TAG, "Again in " + whenAgain);
                 if (whenAgain >= 0) {
                     actualEntry = mVocabData.indexOf(oldEntry);
                     Log.d(LOG_TAG, "Asking old entry: " + getActualVocab().origin);
