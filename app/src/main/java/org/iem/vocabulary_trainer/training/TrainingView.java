@@ -15,8 +15,6 @@ import org.iem.vocabulary_trainer.utils.NavigationDrawerActivity;
 
 public class TrainingView extends Fragment implements TrainingContract.View {
 
-    private TextView mVocabField;
-
     // init
     private TrainingContract.Presenter mPresenter;
     private Context mContext;
@@ -36,7 +34,6 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         ((NavigationDrawerActivity) getActivity()).updateItem();
 
         // initialize buttons
-        mVocabField = (TextView) view.findViewById(R.id.training_vocab_field);
         view.findViewById(R.id.training_show_answer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,20 +62,32 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         mPresenter.startTraining();
     }
 
+    // writes the vocabulary and controls showing of extra buttons
     @Override
-    public boolean writeVocab(String text, boolean isAnswer) {
-        if (mVocabField == null) return false;
+    public boolean writeVocab(String vocab, boolean isAnswer) {
         if (getView() == null) return false;
-        View questionExtra= getView().findViewById(R.id.training_question_extra);
-        if (questionExtra == null) return false;
-        View answerExtra = getView().findViewById(R.id.training_answer_extra);
-        if (answerExtra == null) return false;
-        questionExtra.setVisibility(!isAnswer ? View.VISIBLE : View.INVISIBLE);
-        answerExtra.setVisibility(isAnswer ? View.VISIBLE : View.INVISIBLE);
-        mVocabField.setText(text);
+        // show or show not extras
+        View extra= getView().findViewById(R.id.training_question_extra);
+        if (extra == null) return false;
+        extra.setVisibility(!isAnswer ? View.VISIBLE : View.INVISIBLE);
+        extra = getView().findViewById(R.id.training_answer_extra);
+        if (extra == null) return false;
+        extra.setVisibility(isAnswer ? View.VISIBLE : View.INVISIBLE);
+        // write vocab in the specific field (if it's not the answer, delete text there)
+        TextView vocabField;
+        if (!isAnswer) {
+            vocabField = (TextView) getView().findViewById(R.id.training_answer_field);
+            if (vocabField == null) return false;
+            vocabField.setText(null);
+            vocabField = (TextView) getView().findViewById(R.id.training_question_field);
+        }
+        else vocabField = (TextView) getView().findViewById(R.id.training_answer_field);
+        if (vocabField == null) return false;
+        vocabField.setText(vocab);
         return true;
     }
 
+    // shows the amount of vocabulary in each box
     @Override
     public boolean showAmountsOfBoxes(int[] boxesAmount) {
         if (getView() == null) return false;
@@ -103,6 +112,7 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         return true;
     }
 
+    // hides the extra buttons
     @Override
     public boolean trainingFinished() {
         if (getView() == null) return false;

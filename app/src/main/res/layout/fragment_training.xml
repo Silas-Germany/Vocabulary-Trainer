@@ -5,7 +5,16 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/training_vocab_field"
+        android:id="@+id/training_question_field"
+        android:textSize="100sp"
+        android:text="go"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <TextView
+        android:id="@+id/training_answer_field"
         android:textSize="100sp"
         android:text="go"
         android:gravity="center"
