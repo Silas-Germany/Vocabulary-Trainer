@@ -4,7 +4,7 @@ class TrainingContract {
 
     interface View {
         boolean writeVocab(String vocab, boolean isAnswer);
-        boolean showAmountsOfBoxes(int[] boxesAmount);
+        boolean showAmountsOfBoxes(int[] amountInBoxes, int boxesAmount);
         boolean trainingFinished();
     }
 

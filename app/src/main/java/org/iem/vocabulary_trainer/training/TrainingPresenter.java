@@ -23,6 +23,8 @@ class TrainingPresenter implements TrainingContract.Presenter {
 
     private static final int[] BOXES_VALUES = {0, 5, 15, 25, 35, 45};
     private static final int MINIMAL_DISTANCE = 4;
+    private static final int BOXES_AMOUNT = 3;
+    private static final int RANDOM_DEVIATION = 4;
 
     // init
     private static TrainingContract.View mView = null;
@@ -49,7 +51,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
             seedEntries();
             return;
         }
-        if (!mView.showAmountsOfBoxes(getBoxesAmount())) {
+        if (!mView.showAmountsOfBoxes(getBoxesAmount(), BOXES_AMOUNT + 1)) {
             Log.e(LOG_TAG, "Error showing amount of boxes");
         }
         if (!checkForOldEntry()) {
@@ -92,7 +94,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
 
         if (!wasRight) mVocabData.get(actualEntry).mistakes++;
         mVocabData.get(actualEntry).asked++;
-        Log.d(LOG_TAG, "BasicVocabData now in box " + getActualVocabData().box);
+        Log.d(LOG_TAG, "Vocabulary now in box " + getActualVocabData().box);
         mVocabData.get(actualEntry).lastLearned = mSumAskedEntries;
         mSumAskedEntries++;
         startTraining();
@@ -132,9 +134,9 @@ class TrainingPresenter implements TrainingContract.Presenter {
     // check, if an old entry exists, that has to be asked again
     private boolean checkForOldEntry() {
         for (TrainingData oldEntry : mVocabData) {
-            if (oldEntry.box > 0 && oldEntry.box < 5) {
+            if (oldEntry.box > 0 && oldEntry.box < BOXES_AMOUNT) {
                 // use random number between -4 and 4 for mixing stack up
-                int mixingStack = getRandomNumber(9) - 4;
+                int mixingStack = getRandomNumber(RANDOM_DEVIATION * 2 + 1) - RANDOM_DEVIATION;
                 int whenAgain = mSumAskedEntries - // e.g. 17
                         BOXES_VALUES[oldEntry.box] - // e.g. 15
                         oldEntry.lastLearned + // e.g. 2
@@ -157,7 +159,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         int longestTimeEntry = -1;
         int longestTime = -1;
         for (TrainingData oldEntry : mVocabData) {
-            if (oldEntry.box > 0 && oldEntry.box < 5) {
+            if (oldEntry.box > 0 && oldEntry.box < BOXES_AMOUNT) {
                 int thisValue = BOXES_VALUES[oldEntry.box] + oldEntry.lastLearned;
                 // check, whether item was recently done and in case save separately
                 int lastDone = mSumAskedEntries - oldEntry.lastLearned;
@@ -185,7 +187,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private int[] getBoxesAmount() {
         int[] boxesAmount = new int[6]; // default value is 0
         for (TrainingData entry : mVocabData) {
-            if (entry.box < 0 || entry.box > 5) return null;
+            if (entry.box < 0 || entry.box > BOXES_AMOUNT) return null;
             boxesAmount[entry.box]++;
         }
         return boxesAmount;

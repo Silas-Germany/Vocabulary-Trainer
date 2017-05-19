@@ -7,13 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.iem.vocabulary_trainer.R;
 import org.iem.vocabulary_trainer.utils.NavigationDrawerActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class TrainingView extends Fragment implements TrainingContract.View {
+
+    private List<Button> mBoxButtons = new ArrayList<>();
 
     // init
     private TrainingContract.Presenter mPresenter;
@@ -89,26 +95,34 @@ public class TrainingView extends Fragment implements TrainingContract.View {
 
     // shows the amount of vocabulary in each box
     @Override
-    public boolean showAmountsOfBoxes(int[] boxesAmount) {
+    public boolean showAmountsOfBoxes(int[] amountInBoxes, int boxesAmount) {
+        if (mBoxButtons.size() == 0) {
+            if (!initBoxes(boxesAmount) || mBoxButtons.size() == 0) return false;
+        }
+        for (int i = 0; i < mBoxButtons.size(); i++) {
+            mBoxButtons.get(i).setText(String.valueOf(amountInBoxes[i]));
+        }
+        return true;
+    }
+
+    // initialize the buttons for the boxes
+    private boolean initBoxes(final int boxesAmount) {
         if (getView() == null) return false;
-        Button box = (Button) getView().findViewById(R.id.training_box_0);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[0]));
-        box = (Button) getView().findViewById(R.id.training_box_1);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[1]));
-        box = (Button) getView().findViewById(R.id.training_box_2);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[2]));
-        box = (Button) getView().findViewById(R.id.training_box_3);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[3]));
-        box = (Button) getView().findViewById(R.id.training_box_4);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[4]));
-        box = (Button) getView().findViewById(R.id.training_box_5);
-        if (box == null) return false;
-        box.setText(String.valueOf(boxesAmount[5]));
+        final LinearLayout boxesPlace = (LinearLayout) getView().findViewById(R.id.training_boxes);
+        if (boxesPlace == null) return false;
+        for (int i = 0; i < boxesAmount; i++) {
+            final Button box = new Button(mContext);
+            box.setClickable(false);
+            box.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    box.setWidth(boxesPlace.getWidth() / boxesAmount);
+                    box.removeOnLayoutChangeListener(this);
+                }
+            });
+            boxesPlace.addView(box);
+            mBoxButtons.add(box);
+        }
         return true;
     }
 
