@@ -1,6 +1,7 @@
 package org.iem.vocabulary_trainer.training;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,8 +18,8 @@ import java.util.Random;
 class TrainingPresenter implements TrainingContract.Presenter {
     private static final String LOG_TAG = "VT_" + TrainingPresenter.class.getSimpleName();
 
-    private List<TrainingData> mVocabData = new ArrayList<>();
-    private int actualEntry = -1;
+    private final List<TrainingData> mVocabData = new ArrayList<>();
+    private int mActualEntry = -1;
     private int mSumAskedEntries = 0;
 
     private static final int[] BOXES_VALUES = {0, 5, 15, 25, 35, 45};
@@ -41,20 +42,19 @@ class TrainingPresenter implements TrainingContract.Presenter {
                 mVocabData.add(newEntry);
             }
         }
+        Log.d(LOG_TAG, "Data loaded");
     }
 
     // starts the training through showing the questionable vocabulary
     @Override
-    public void startTraining() {
+    public void startTraining(Bundle savedInstanceState) {
         if (mVocabData.size() == 0) {
             Log.e(LOG_TAG, "No Vocabulary saved");
             seedEntries();
             return;
         }
-        if (!mView.showAmountsOfBoxes(getBoxesAmount(), BOXES_AMOUNT + 1)) {
-            Log.e(LOG_TAG, "Error showing amount of boxes");
-        }
-        if (!checkForOldEntry()) {
+        if (savedInstanceState != null) restoreVariables(savedInstanceState);
+        else if (!checkForOldEntry()) {
             if (!addActualVocab()) {
                 if (!takeBestOldEntry()) {
                     Toast.makeText(mContext, mContext.getString(R.string.training_toast_all_done),
@@ -65,6 +65,9 @@ class TrainingPresenter implements TrainingContract.Presenter {
                     return;
                 }
             }
+        }
+        if (!mView.showAmountsOfBoxes(getAmountInBoxes(), BOXES_AMOUNT + 1)) {
+            Log.e(LOG_TAG, "Error showing amount of boxes");
         }
         if (!mView.writeVocab(getActualVocab().origin, false)) {
             Log.e(LOG_TAG, "Error writing vocabulary");
@@ -88,16 +91,76 @@ class TrainingPresenter implements TrainingContract.Presenter {
     public void vocabAnswered(boolean wasRight) {
         // put in the correct box (from 0=stock directly to 2)
         if (getActualVocabData().box <= 1) {
-            if (wasRight) mVocabData.get(actualEntry).box = 2;
-            else mVocabData.get(actualEntry).box = 1;
-        } else mVocabData.get(actualEntry).box += wasRight? 1 : -1;
+            if (wasRight) mVocabData.get(mActualEntry).box = 2;
+            else mVocabData.get(mActualEntry).box = 1;
+        } else mVocabData.get(mActualEntry).box += wasRight? 1 : -1;
 
-        if (!wasRight) mVocabData.get(actualEntry).mistakes++;
-        mVocabData.get(actualEntry).asked++;
+        if (!wasRight) mVocabData.get(mActualEntry).mistakes++;
+        mVocabData.get(mActualEntry).asked++;
         Log.d(LOG_TAG, "Vocabulary now in box " + getActualVocabData().box);
-        mVocabData.get(actualEntry).lastLearned = mSumAskedEntries;
+        mVocabData.get(mActualEntry).lastLearned = mSumAskedEntries;
         mSumAskedEntries++;
-        startTraining();
+        startTraining(null);
+    }
+
+    @Override
+    public Bundle saveVariables() {
+        ArrayList<Integer> id = new ArrayList<>();
+        ArrayList<Integer> box = new ArrayList<>();
+        ArrayList<Integer> lastLearned = new ArrayList<>();
+        ArrayList<Integer> mistakes = new ArrayList<>();
+        ArrayList<Integer> asked = new ArrayList<>();
+        for (TrainingData entry : mVocabData) {
+            id.add(entry.basicVocabData.id);
+            box.add(entry.box);
+            lastLearned.add(entry.lastLearned);
+            mistakes.add(entry.mistakes);
+            asked.add(entry.asked);
+        }
+        Bundle result = new Bundle();
+        result.putIntegerArrayList("id", id);
+        result.putIntegerArrayList("box", box);
+        result.putIntegerArrayList("lastLearned", lastLearned);
+        result.putIntegerArrayList("mistakes", mistakes);
+        result.putIntegerArrayList("asked", asked);
+        result.putInt("actualEntry", mActualEntry);
+        result.putInt("sumAskedEntries", mSumAskedEntries);
+        Log.d(LOG_TAG, "Variables saved");
+        return result;
+    }
+
+    private void restoreVariables(Bundle variables) {
+        if (!variables.containsKey("id")) {
+            Log.e(LOG_TAG, "Error restoring variables. Nothing saved");
+            return;
+        }
+        List<Integer> id = variables.getIntegerArrayList("id");
+        List<Integer> box = variables.getIntegerArrayList("box");
+        List<Integer> lastLearned = variables.getIntegerArrayList("lastLearned");
+        List<Integer> mistakes = variables.getIntegerArrayList("mistakes");
+        List<Integer> asked = variables.getIntegerArrayList("asked");
+        if (id.size() != box.size() ||
+                id.size() != lastLearned.size() ||
+                id.size() != mistakes.size() ||
+                id.size() != asked.size()) {
+            Log.e(LOG_TAG, "Error restoring variables. Not same amount");
+            return;
+        }
+        List<BasicVocabData> allVocabData = GlobalData.sDatabase.getAllBasicVocabData();
+        mVocabData.clear();
+        for (BasicVocabData vocabData : allVocabData) {
+            int index = id.indexOf(vocabData.id);
+            TrainingData entry = new TrainingData();
+            entry.basicVocabData = vocabData;
+            entry.box = box.get(index);
+            entry.lastLearned = lastLearned.get(index);
+            entry.mistakes = mistakes.get(index);
+            entry.asked = asked.get(index);
+            mVocabData.add(entry);
+        }
+        mActualEntry = variables.getInt("actualEntry");
+        mSumAskedEntries = variables.getInt("sumAskedEntries");
+        Log.d(LOG_TAG, "Variables restored" + mActualEntry + getActualVocab().origin);
     }
 
     // adds a new vocab
@@ -109,9 +172,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         }
         if (remainingEntries.size() == 0) return false;
         newEntry = getRandomNumber(remainingEntries.size());
-        actualEntry = remainingEntries.get(newEntry);
-        Log.d(LOG_TAG, "Got index " + remainingEntries.get(newEntry) + " from " + newEntry +
-                " out of " + remainingEntries.size());
+        mActualEntry = remainingEntries.get(newEntry);
         Log.d(LOG_TAG, "Asking new entry: " + getActualVocab().origin);
         return true;
     }
@@ -123,7 +184,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
 
     // returns actual vocabulary-data
     private TrainingData getActualVocabData() {
-        return mVocabData.get(actualEntry);
+        return mVocabData.get(mActualEntry);
     }
     // returns random number from 0 to max-1
     private int getRandomNumber (int max) {
@@ -142,9 +203,8 @@ class TrainingPresenter implements TrainingContract.Presenter {
                         oldEntry.lastLearned + // e.g. 2
                         mixingStack;
                 // if an entry was found, make it being the actual one
-                Log.d(LOG_TAG, "Again in " + whenAgain);
                 if (whenAgain >= 0) {
-                    actualEntry = mVocabData.indexOf(oldEntry);
+                    mActualEntry = mVocabData.indexOf(oldEntry);
                     Log.d(LOG_TAG, "Asking old entry: " + getActualVocab().origin);
                     return true;
                 }
@@ -179,13 +239,13 @@ class TrainingPresenter implements TrainingContract.Presenter {
             if (longestTimeEntry == -1) return false;
             else bestEntry = longestTimeEntry;
         }
-        actualEntry = bestEntry;
+        mActualEntry = bestEntry;
         Log.d(LOG_TAG, "Asking best old entry: " + getActualVocab().origin);
         return true;
     }
 
-    private int[] getBoxesAmount() {
-        int[] boxesAmount = new int[6]; // default value is 0
+    private int[] getAmountInBoxes() {
+        int[] boxesAmount = new int[BOXES_AMOUNT + 1]; // default value is 0
         for (TrainingData entry : mVocabData) {
             if (entry.box < 0 || entry.box > BOXES_AMOUNT) return null;
             boxesAmount[entry.box]++;

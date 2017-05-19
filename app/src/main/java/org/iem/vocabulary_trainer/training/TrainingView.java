@@ -65,7 +65,11 @@ public class TrainingView extends Fragment implements TrainingContract.View {
     // start training as soon as view is created
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mPresenter.startTraining();
+        Bundle variables = null;
+        if (savedInstanceState != null) {
+            variables = savedInstanceState.getBundle("variables");
+        }
+        mPresenter.startTraining(variables);
     }
 
     // writes the vocabulary and controls showing of extra buttons
@@ -138,4 +142,11 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         extras.setVisibility(View.INVISIBLE);
         return true;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBundle("variables", mPresenter.saveVariables());
+        super.onSaveInstanceState(outState);
+    }
+
 }

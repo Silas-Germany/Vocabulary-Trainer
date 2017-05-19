@@ -53,9 +53,11 @@ public class NavigationDrawerActivity extends AppCompatActivity {
 
         // initialize the first fragment
         if (getSupportFragmentManager() == null) return;
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, new TrainingView())
-                .commit();
+        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, new TrainingView())
+                    .commit();
+        }
     }
     // initialize the ActionBarDrawerToggle
     @Override

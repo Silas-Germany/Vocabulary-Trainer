@@ -1,5 +1,7 @@
 package org.iem.vocabulary_trainer.training;
 
+import android.os.Bundle;
+
 class TrainingContract {
 
     interface View {
@@ -9,8 +11,9 @@ class TrainingContract {
     }
 
     interface Presenter {
-        void startTraining();
+        void startTraining(Bundle savedInstanceState);
         void vocabAnswered(boolean wasRight);
         void showAnswer();
+        Bundle saveVariables();
     }
 }
