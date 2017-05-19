@@ -21,6 +21,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private boolean mIsAnswer = false;
     private int mAllAskedEntriesAmount = 0;
     private static final int[] BOXES_VALUES = {5, 15, 25, 35, 45};
+    private static final int MINIMAL_DISTANCE = 4;
 
     // init
     private static TrainingContract.View mView = null;
@@ -47,16 +48,22 @@ class TrainingPresenter implements TrainingContract.Presenter {
             seedEntries();
             return;
         }
+        if (!mView.showAmountsOfBoxes(getBoxesAmount())) {
+            Log.e(LOG_TAG, "Error showing amount of boxes");
+        }
         if (!checkForOldEntry()) {
             if (!addActualVocab()) {
                 if (!takeBestOldEntry()) {
-                    Toast.makeText(mContext, mContext.getString(R.string.training_toast_all_done) + getActualVocab().box,
+                    Toast.makeText(mContext, mContext.getString(R.string.training_toast_all_done),
                             Toast.LENGTH_LONG).show();
+                    if (!mView.trainingFinished()) {
+                        Log.e(LOG_TAG, "Error finishing training");
+                    }
                     return;
                 }
             }
         }
-        if (mView.writeVocab(getActualVocab().origin, mIsAnswer) != 0) {
+        if (!mView.writeVocab(getActualVocab().origin, mIsAnswer)) {
             Log.e(LOG_TAG, "Error writing vocabulary");
         }
     }
@@ -73,7 +80,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
             return;
         }
         mIsAnswer = true;
-        if (mView.writeVocab(getActualVocab().translation, mIsAnswer) != 0) {
+        if (!mView.writeVocab(getActualVocab().translation, mIsAnswer)) {
             Log.e(LOG_TAG, "Error writing vocabulary");
         }
     }
@@ -92,6 +99,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         }
         Log.d(LOG_TAG, "Vocab now in box " + getActualVocab().box);
         mVocabEntries.get(getActualVocabIndex()).lastLearned = mAllAskedEntriesAmount;
+        mAllAskedEntriesAmount ++;
         startTraining();
     }
 
@@ -107,7 +115,6 @@ class TrainingPresenter implements TrainingContract.Presenter {
         mAskedEntries.add(remainingEntries.get(newEntry));
         Log.d(LOG_TAG, "Got index " + remainingEntries.get(newEntry) + " from " + newEntry +
                 " out of " + remainingEntries.size());
-        mAllAskedEntriesAmount ++;
         Log.d(LOG_TAG, "Asking new entry: " + getActualVocab().origin);
         return true;
     }
@@ -154,23 +161,43 @@ class TrainingPresenter implements TrainingContract.Presenter {
     private boolean takeBestOldEntry() {
         int bestEntry = -1;
         int bestValue = Integer.MAX_VALUE;
+        int longestTimeEntry = -1;
+        int longestTime = -1;
         for (int oldEntryIndex : mAskedEntries) {
             Vocab oldEntry = mVocabEntries.get(oldEntryIndex);
             if (oldEntry.box < 5) {
                 int thisValue = BOXES_VALUES[oldEntry.box] + oldEntry.lastLearned;
-                if (thisValue < bestValue) {
+                // check, whether item was recently done and in case save separately
+                int lastDone = mAllAskedEntriesAmount - oldEntry.lastLearned;
+                if (lastDone < MINIMAL_DISTANCE) {
+                    if (lastDone > longestTime) {
+                        longestTime = lastDone;
+                        longestTimeEntry = oldEntryIndex;
+                    }
+                // check, for greatest value (inclusive according to the box it is in)
+                } else if (thisValue < bestValue) {
                     bestValue = thisValue;
                     bestEntry = oldEntryIndex;
                 }
             }
         }
-        if (bestEntry != -1) {
-            mAskedEntries.remove((Integer) bestEntry);
-            mAskedEntries.add(bestEntry);
-            Log.d(LOG_TAG, "Asking best old entry: " + getActualVocab().origin);
-            return true;
+        if (bestEntry == -1) {
+            if (longestTimeEntry == -1) return false;
+            else bestEntry = longestTimeEntry;
         }
-        return false;
+        mAskedEntries.remove((Integer) bestEntry);
+        mAskedEntries.add(bestEntry);
+        Log.d(LOG_TAG, "Asking best old entry: " + getActualVocab().origin);
+        return true;
+    }
+
+    private int[] getBoxesAmount() {
+        int[] boxesAmount = new int[6]; // default value is 0
+        for (Vocab entry : mVocabEntries) {
+            if (entry.box < 0 || entry.box > 5) return null;
+            boxesAmount[entry.box]++;
+        }
+        return boxesAmount;
     }
 
     private void seedEntries() {

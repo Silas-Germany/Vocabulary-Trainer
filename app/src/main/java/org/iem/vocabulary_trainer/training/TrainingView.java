@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.iem.vocabulary_trainer.R;
@@ -65,16 +66,52 @@ public class TrainingView extends Fragment implements TrainingContract.View {
     }
 
     @Override
-    public int writeVocab(String text, boolean isAnswer) {
-        if (mVocabField == null) return 3;
-        if (getView() == null) return 1;
+    public boolean writeVocab(String text, boolean isAnswer) {
+        if (mVocabField == null) return false;
+        if (getView() == null) return false;
         View questionExtra= getView().findViewById(R.id.training_question_extra);
-        if (questionExtra == null) return 4;
+        if (questionExtra == null) return false;
         View answerExtra = getView().findViewById(R.id.training_answer_extra);
-        if (answerExtra == null) return 2;
+        if (answerExtra == null) return false;
         questionExtra.setVisibility(!isAnswer ? View.VISIBLE : View.INVISIBLE);
         answerExtra.setVisibility(isAnswer ? View.VISIBLE : View.INVISIBLE);
         mVocabField.setText(text);
-        return 0;
+        return true;
+    }
+
+    @Override
+    public boolean showAmountsOfBoxes(int[] boxesAmount) {
+        if (getView() == null) return false;
+        Button box = (Button) getView().findViewById(R.id.training_box_0);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[0]));
+        box = (Button) getView().findViewById(R.id.training_box_1);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[1]));
+        box = (Button) getView().findViewById(R.id.training_box_2);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[2]));
+        box = (Button) getView().findViewById(R.id.training_box_3);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[3]));
+        box = (Button) getView().findViewById(R.id.training_box_4);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[4]));
+        box = (Button) getView().findViewById(R.id.training_box_5);
+        if (box == null) return false;
+        box.setText(String.valueOf(boxesAmount[5]));
+        return true;
+    }
+
+    @Override
+    public boolean trainingFinished() {
+        if (getView() == null) return false;
+        View extras = getView().findViewById(R.id.training_question_extra);
+        if (extras == null) return false;
+        extras.setVisibility(View.INVISIBLE);
+        extras = getView().findViewById(R.id.training_answer_extra);
+        if (extras == null) return false;
+        extras.setVisibility(View.INVISIBLE);
+        return true;
     }
 }

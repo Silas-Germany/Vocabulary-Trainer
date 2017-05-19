@@ -6,5 +6,5 @@
     <string name="navigation_item_training">Train Vocabulary</string>
 
     <string name="training_show_answer">Show answer</string>
-    <string name="training_toast_all_done">Training finished.\nAll vocabulary are in highest box.</string>
+    <string name="training_toast_all_done">Training finished.\nAll vocabulary are in the highest box.</string>
 </resources>

@@ -3,7 +3,9 @@ package org.iem.vocabulary_trainer.training;
 class TrainingContract {
 
     interface View {
-        int writeVocab(String vocab, boolean isAnswer);
+        boolean writeVocab(String vocab, boolean isAnswer);
+        boolean showAmountsOfBoxes(int[] boxesAmount);
+        boolean trainingFinished();
     }
 
     interface Presenter {
