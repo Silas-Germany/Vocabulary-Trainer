@@ -19,7 +19,7 @@ public class Database extends SQLiteOpenHelper implements UtilsContract.Database
     private static final String LOG_TAG = "VT_" + Database.class.getSimpleName();
 
     // database settings
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "vocabulary.db";
 
     // database tables

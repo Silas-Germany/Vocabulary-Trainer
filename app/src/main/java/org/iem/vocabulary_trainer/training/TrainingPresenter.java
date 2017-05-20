@@ -1,9 +1,13 @@
 package org.iem.vocabulary_trainer.training;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.iem.vocabulary_trainer.R;
@@ -12,6 +16,8 @@ import org.iem.vocabulary_trainer.data.EvaluatedData;
 import org.iem.vocabulary_trainer.data.TrainingData;
 import org.iem.vocabulary_trainer.utils.GlobalData;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -108,6 +114,52 @@ class TrainingPresenter implements TrainingContract.Presenter {
     }
 
     @Override
+    public void findBestTextSize(TextView textView, String text) {
+        // wait for one minute, if textView wasn't initialized yet (width is necessary)
+        int actualTimeStamp = GlobalData.getTimestamp();
+        while (textView.getWidth() == 0) {
+            if (actualTimeStamp + 1 < GlobalData.getTimestamp()) return;
+        }
+
+        // check for allowed line-number through a new TextView
+        TextView measureTextView = new TextView(mContext);
+        measureTextView.setTypeface(textView.getTypeface());
+        int freeSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(textView.getWidth(), View.MeasureSpec.EXACTLY);
+        measureTextView.setText(text);
+        int textSize = (int) textView.getTextSize() + 5; // undo the -5
+        do {
+            textSize -= 5;
+            measureTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            measureTextView.measure(widthSpec, freeSpec);
+        } while (measureTextView.getMeasuredHeight() > textView.getHeight());
+
+        // check for too long words through a paint object
+        Paint paint = new Paint();
+        paint.setTypeface(textView.getTypeface());
+        // init variables here necessary
+        String subText;
+        int amount;
+        textSize += 5; // undo the -5
+        do {
+            subText = text;
+            textSize -= 5;
+            paint.setTextSize(textSize);
+            int splitPoint;
+            do {
+                // check, how many characters can be drawn in one line
+                amount = paint.breakText(subText, true, textView.getWidth(), null);
+                // split text at a space (like textView does it) and take second part
+                splitPoint = subText.substring(0, amount).lastIndexOf(' ');
+                subText = subText.substring(splitPoint + 1, subText.length());
+            } while (splitPoint != -1);
+        } while (subText.length() != amount);
+        Log.d(LOG_TAG, "Found best text size: " + textSize);
+        mView.setTextSize(textView, textSize);
+    }
+
+    // returns a bundle of all variables for saving (for screen rotation)
+    @Override
     public Bundle saveVariables() {
         ArrayList<Integer> id = new ArrayList<>();
         ArrayList<Integer> box = new ArrayList<>();
@@ -133,6 +185,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         return result;
     }
 
+    // restores all variables (after screen rotation)
     private void restoreVariables(Bundle variables) {
         if (!variables.containsKey("id")) {
             Log.e(LOG_TAG, "Error restoring variables. Nothing saved");
@@ -219,6 +272,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         return false;
     }
 
+    // returns best old entry (used if none is ready yet)
     private boolean takeBestOldEntry() {
         int bestEntry = -1;
         int bestValue = Integer.MAX_VALUE;
@@ -250,6 +304,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         return true;
     }
 
+    // get amounts of vocabulary of each box
     private int[] getAmountInBoxes() {
         int[] boxesAmount = new int[BOXES_AMOUNT + 1]; // default value is 0
         for (TrainingData entry : mVocabData) {
@@ -259,44 +314,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         return boxesAmount;
     }
 
-    private void seedEntries() {
-        List<BasicVocabData> newEntries = new ArrayList<>();
-        BasicVocabData newEntry = new BasicVocabData();
-        newEntry.origin = "I";
-        newEntry.translation = "Ich";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "You (Sg.)";
-        newEntry.translation = "Du";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "He";
-        newEntry.translation = "Er";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "She";
-        newEntry.translation = "Sie (Sg.)";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "It";
-        newEntry.translation = "Es";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "We";
-        newEntry.translation = "Wir";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "You (Pl.)";
-        newEntry.translation = "Ihr";
-        newEntries.add(newEntry);
-        newEntry = new BasicVocabData();
-        newEntry.origin = "They";
-        newEntry.translation = "Sie (Pl.)";
-        newEntries.add(newEntry);
-        GlobalData.sDatabase.saveBasicEntries(newEntries);
-        Log.d(LOG_TAG, "New entries added");
-    }
-
+    // save results of the training in the database
     private boolean trainingFinished() {
         List<EvaluatedData> evaluatedDataList = GlobalData.sDatabase.getAllEvaluatedData();
         for (TrainingData trainingData : mVocabData) {
@@ -326,5 +344,31 @@ class TrainingPresenter implements TrainingContract.Presenter {
         }
         Log.d(LOG_TAG, "Vocabulary evaluated");
         return GlobalData.sDatabase.updateEvaluatedData(evaluatedDataList);
+    }
+
+    private void seedEntries() {
+        String fileContent = null;
+        try {
+            InputStream input = mContext.getAssets().open("vocabulary.txt");
+            byte[] buffer = new byte[input.available()];
+            if (input.read(buffer) == -1) throw new IOException("Empty file");
+            input.close();
+            fileContent = new String(buffer);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error reading file");
+        }
+        if (fileContent == null) return;
+
+        List<BasicVocabData> vocabDataList = new ArrayList<>();
+        String[] fileLines = fileContent.split("\n");
+        for (String line : fileLines) {
+            String[] vocabData = line.split("\t");
+            BasicVocabData vocab = new BasicVocabData();
+            vocab.translation = vocabData[0];
+            vocab.origin = vocabData[1];
+            vocabDataList.add(vocab);
+        }
+        GlobalData.sDatabase.saveBasicEntries(vocabDataList);
+        Log.d(LOG_TAG, "New entries added");
     }
 }

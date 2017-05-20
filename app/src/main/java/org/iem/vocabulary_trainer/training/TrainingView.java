@@ -3,6 +3,7 @@ package org.iem.vocabulary_trainer.training;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +76,7 @@ public class TrainingView extends Fragment implements TrainingContract.View {
 
     // writes the vocabulary and controls showing of extra buttons
     @Override
-    public boolean writeVocab(String vocab, boolean isAnswer) {
+    public boolean writeVocab(final String vocab, boolean isAnswer) {
         if (getView() == null) return false;
         // show or show not extras
         View extra= getView().findViewById(R.id.training_question_extra);
@@ -95,6 +96,17 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         else vocabField = (TextView) getView().findViewById(R.id.training_answer_field);
         if (vocabField == null) return false;
         vocabField.setText(vocab);
+
+        // set text size - first to default and if necessary smaller
+        vocabField.setTextSize(90);
+        final TextView actualTextView = vocabField;
+        actualTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                mPresenter.findBestTextSize(actualTextView, vocab);
+            }
+        });
+
         return true;
     }
 
@@ -151,4 +163,9 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void setTextSize(TextView textView, int textSize) {
+        // apply text-size
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    }
 }

@@ -44,7 +44,7 @@ public class OverviewView extends Fragment implements OverviewContract.View {
     }
 
     @Override
-    public boolean initLists(List<String> rightList, List<String> leftList) {
+    public boolean initLists(List<String> leftList, List<String> rightList) {
         if (getView() == null) return false;
         ListView list = (ListView) getView().findViewById(R.id.overview_left_list);
         if (list == null) return false;

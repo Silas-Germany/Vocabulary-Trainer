@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/training_question_field"
-        android:textSize="70sp"
+        android:textSize="90sp"
         android:text="go"
         android:gravity="center"
         android:layout_weight="1"

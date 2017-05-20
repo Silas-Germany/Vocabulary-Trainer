@@ -1,0 +1,622 @@
+दिन	day
+कल	tomorrow, yesterday
+देखने के लिये जनह	a sight, a place to see
+चिड़ियाघर	zoo
+पैदल	on foot
+चौराहा	intersection, crossroads
+दाँए	on the right
+पुल	bridge
+के नीचे	under
+वाह	want, wish, "wonderful!" (ohne ना)
+पा	be able to, can, obtain, find
+हज़ार	1000
+लाख	100000
+करोड़	10000000
+अरब	1000000000
+कहीं	somewhere
+कभी	sometime
+नौकरी	job
+बाहर	out, outside
+दूंढ	look for
+काम	work, job
+आसान	easy
+रख	put, keep
+पढ़ा लिखा	educated
+बुरा	bad
+कोशिस	effort, f
+तलाश	search, f
+भाग्य	luck
+खराब	bad, negative
+दोष	blame
+दे	give
+सोच	think
+पिछला	last, previous
+बेचारा	helpless, poor
+कमा	earn
+पहले	ago, (a little while ago), previously
+भर	around, total, over, (all day long)
+देर	late
+ज़माना	times, age
+सूरज	sun
+मज़बूत	strong
+कहानी	story
+बत्ती	light
+चो	which
+चैसो	like, similar
+चुक	finish to, have already done
+पाप	sin
+वश	power
+परमेश्वर	God
+बह	flow
+नहर	canal
+लकड़ी	fire wood, stick
+तना	stem, trunk
+चौड़ा	wide
+कम	less
+पशु	animal
+बकरी	goat
+पार	beyond, other side
+गिर	fall, downfall
+कौआ	crow
+मुँह	mouth
+साबुत	whole
+लोमड़ी	fox
+अचानक	suddenly
+उपाय	solution
+पंख	wing
+चाहे	whether
+पक्षी	bird
+बाँसुरी	flute
+तारीफ	praise, compliment
+फ़ूल	flower
+चोंच	beak, pecker
+चाव	fervor, appetite
+रास्ता	way, path, route
+चींटी	ant
+राह	path
+टिड्डा	grasshopper
+जरा	just, agedness
+इकट्ठा	gather
+टूट	break, shatter
+बादल	cloud
+संकट	crisis, trouble
+अनाज	grain, cereal
+जमा	deposit
+सहायता	assistance, help
+दशा	state, situation
+क्षमा	forgiveness, pardon
+सा	greatly, particularly, ever so
+किसान	farmer
+बिल्ली	cat
+आपस	interconnected, reciprocal
+बराबर	equal
+फ़ैसला	decision
+तराज़ू	balance, weighing scale
+पलड़ा	pan, scale, side
+तोड़	break, crack
+घबरा	terrified, alarmed
+बाकी	rest, remainder
+उड़	fly
+सर्दी	winter, cold
+भालू	bear
+पूँछ	tail
+बर्फ	snow, ice
+जंगल	forest, jungle
+छिपा	conceal, hide
+ठिठुर	shiver
+जानवर	animal, beast
+मछली	fish
+छेद	hole
+बढ़	grow, increase
+प्रश्न	question, query
+उत्तर	answer, reply
+गिनती	counting, number
+राजधानी	capital city
+घड़ा	pot, jar, water jug
+पिंजरा	cage, birdcage
+दीवार	wall, f
+स्त्री	female, woman
+किला	fort, castle
+इमारत	building, f
+मैला	muddy, unwashed
+पत्ता	leaf
+स्याही	ink
+हरा	green
+पीला	yellow
+नीला	blue
+नदी	river
+अँग्रेज़	English person, m, f
+आदमी	man, person, m
+आशा	hope, f
+कुरसी	chair
+ख़ाली	empty, vacant
+गाड़ी	car
+चिड़िया	bird, f
+चनवरी	January
+दादी	grandmother
+पत्थर	stone
+पिता	father
+प्रति	copy
+बग़ीचा	garden
+बहू	daughter-in-law, f
+बूढ़ा	elderly
+भारतीय	Indian
+भावा	language, f
+माता	mother, f
+मैनव	human being
+मूर्ति	statue, image, f
+मेच़	table, f
+यहाँ	here
+रविवार	Sunday
+राचा	king
+लाल	red
+सफ़ेद	white
+साइकिल	bicycle
+सुन्दर	beautiful
+हवादार	airy
+अख़बार	newspaper
+अध्यापक	teacher
+काग़ज़	paper
+कूपया	please
+क्यों	why
+गंदा	dirty
+चप्पल	sandal, f
+जिट्ठी	letter, note, chit
+छात्र	student
+छात्रा	female student, f
+जवाब	answer
+चूता	shoe, pair of shoes
+दुबला	thin, slight of build
+न	not, is not so?
+नाराज़	angry, displeased
+पतला	thin
+पागल	mad, crazy
+प्रदूषण	pollution
+बीमार	ill
+महँगा	expensive
+मेहरबानी	kindness
+मोटा	fat, thick
+या	or
+मौसम	weather
+लंबा	tall, high
+विद्यर्थी	(college) student
+शब्दकोश	dictionary
+सख़्त	strict, severe
+सब	everything, all
+सवाल	question
+सस्ता	cheap
+सोमवार	Monday
+ज़्यादातर	mostly, most
+तबियत	health
+पति	husband
+पत्नी	wife
+सारा	all, whole
+वग़ैरह	and so on, etc.
+फ़र्श	floor
+दरी	floor rug, mat
+ख़ैर	well, anyway
+जशमा	glasses
+रे	eh, hey
+शायद	perhaps
+दराज़	drawer
+चीज़	thing
+आराम	rest, comfort
+क़लम	pen, m, f
+काला	black
+तस्वीर	picture
+दरवाज़ा	door
+परदा	curtain
+भारत	India
+ख़ूबसूरत	beautiful, handsome
+दोस्त	good friend, m, f
+रिशतेदार	relative
+प्यारा	dear, lovely
+विदेश	foreign country
+मतलब	meaning
+अकेला	alone
+मित्र	friend, m, f
+मलूम	known
+ज़ूकाम	a cold
+बुख़ार	fever
+मेहनती	hardworking
+अफ़सोस	the regret
+ऐकदम	completely
+गरम	warm, hot
+गोली	tablet, pill, bullet
+चाँदी	silver
+चाय	tea
+ठंडा	cold
+दफ़्तर	office
+दुकान	shop
+पहाड़	hill, mountain
+प्रिय	dear
+महल	palace
+होशियार	clever, intelligent
+इघर	here, over here, recently, latterly
+कंबल	blanket
+कह	say (से - to)
+कुत्ता	dog
+कुरता	kurta, Indian shirt
+ख़त	letter
+ख़याल	opinion
+खिला	serve, give to eat
+खिलौना	toy
+घोड़ा	horse
+चाबी	key
+छू	touch
+जगा	arouse from sleep
+ज़रा	just, a little
+झगड़ा	quarrel, row
+ठहर	stop, wait
+ढूँढ़	look for, find
+तैयार	ready
+थैला	bag, cloth bag
+दूध	milk
+देख	see, look
+देवर	husband's younger brother
+धो	wash
+धोबी	washerman, m
+ध्यान	attention
+नारा	slogan
+नौकर	servant
+पड़ा	lying
+पानी	water
+पापा	Papa, father
+पी	drink, smoke
+पूछ	ask (से - of)
+पेड़	tree
+पैसा	money, paisa (hundredth of a rupee)
+फल	fruit
+बुला	call, invite
+बैठ	sit
+बोल	speak
+भैया	brother (long form)
+मत	don't (with commands)
+मार	beat, hit
+ला	bring
+लिख	write
+शौतान	devil
+सचमुच	really, is it true
+सरल	simple
+सुन	listen, hear
+अकेलापा	loneliness
+अक्सर	often, usually
+उच्चारण	pronunciation
+कंपी	company, firm
+की तरफ़	towards
+के अंदर	inside
+के आगे	in front of, ahead of
+के उ्रपर	on top of
+के पीछे	behind
+के सामने	facing, opposite
+गपशप	gossip, f
+गोशत	meat
+चाँद	moon
+चुप	silent
+छोड़	leave
+चान	know
+टुकड़ा	piece, bit
+डर	fear (someone – से)
+नफ़रत	the hate, dislike, f
+प्यार	love, affection
+बचपन	childhood
+बाप	father (informal)
+मन	mind
+महसूस कर	feel, experience
+मालिक	boss
+मुन्ना	Munna (nickname for little boy)
+मुशकल	difficult
+लंबाई	height, length
+लिपि	script
+विदेशी	foreigner, m, f
+वैसे	actually
+व्यमग्य	sarcasm
+शराब	alcoholic, liquor, f
+शरारत	mischief, f
+शुक्रवार	Friday
+शुद्ध	pure, unmixed
+सहेली	girl's female friend
+सीख	learn
+हँस	laugh
+हमेशा	always
+होनहार	promising
+औरत	woman, f
+के नज़दीक	near
+के समान	like, equal to
+खड़ा	standing, waiting
+ख़त्म	finished
+ख़ास	special, particular
+गरमी	heat, summer
+चावल	rice
+ज़रूरत	need, f
+ज़रूरी	urgent, necessary
+जेब	pocket, f
+डिब्बा	box, railway, compartment
+तरफ़	side, direction, f
+दर्जन	dozen, f
+पढ़ा	teach
+फ़र्क	difference, seperation
+बाद में	later on
+बाबू	clerk
+बिजली	electricity
+बेकार	useless
+महायुद्ध	great war
+मुसलमान	Muslim
+मोती	pearl
+रोटी	bread, food
+वजह	reason, cause, f
+शनिवार	Saturday
+शुरू कर	begin
+सपना	a dream
+सैर	walk, trip
+स्वर्ग	heaven
+अस्पताल	hospital
+आँख	eye, f
+आम	ordinary, mango
+उ्रपर	above, up, upstairs
+ऐस	luxury
+के पास	in possession of
+ग़लत	wrong, incorrect
+गली	lane
+घंटा	hour
+चला	drive
+जन्मदिन	birthday
+ज़ोर	force, strength
+डाल	branch (of tree), f
+तंग	narrow
+तकलीफ़	trouble, distress
+तरह	way, manner, f
+तारीख़	date
+ताली	clapping
+तैयार कर	prepare
+थकान	tiredness, f
+थाली	platter
+दल	political party
+दाहिना	right (opp. of left)
+दिली	'of the heart', intimate
+नंबर	number
+नज़दीक	near, nearby
+पल	moment
+पहर	part of the day
+पूरा	full, complete
+ब	make
+बायाँ	left
+भगवान	idle, god
+भेज	send
+महीना	month
+मिला	dial, phone
+मोड़	the turn, bend
+मोर	peacock
+विलंब	delay
+सब्ज़ी	vegetable
+सवेरा	early morning
+सावधानी	the care
+सिर	head
+हाथ	hand
+हे	Oh!, Ah!
+अगर	if
+अधिक	much, many, more
+असली	real
+इंतज़म	arrangements, organisation
+इतिहास	history
+इरादा	intention
+उषा	dawn, f
+कठिन	hard, difficult
+कम से कम	at least
+काल	time, period of day
+के आस-पास	around, in vicinity of
+ख़रीमयाँ	summer, f, pl
+गा	sing (-ना=song)
+गुंडा	lout, hooligan
+चिल्ला	shout
+छपना	be printed
+जनता	public, the people
+डाक	mail, post
+तैर	swim
+दर्शन	vision, audience or auspicious meeting
+दावत	(invitation to) a dinner, f
+नमक	salt
+नुक़सान	the harm
+नौजवान	youth, young man
+पत्र	letter, note
+परंतु	but
+पहचान	recognise
+प्राध्यापक	lecturer
+फ़ायदा	provit, advantage, point
+बदा	play (music)
+बिक	be sold
+भतीजा	nephew
+भविष्य	future
+भोला	innocent, guileless, simple
+मँगवा	order, send for
+मचा	create (noise etc.)
+मना	prohibited
+मिस्तरी	mechanic, artisan
+रवानी	fluency
+रुक	stop, stay on
+रेलगाड़ी	train
+लायक़	worth (doing)
+लौट	return
+विशवविद्यालय	university
+व्यवस्था	arrangements, f
+समझ	understanding, f
+सही	true, correct
+हवाई जहाज़	aeroplane
+हिल	move, stir
+अवशय	certainly
+असंभव	impossible
+आख़िर	after all
+आटो	Auto-rickshaw
+आधा	half
+इतना	so (much)
+इलाज	treatment, cure
+उतार	take down, take off
+उम्मीद	hope, possibility, f
+ऊँचा	high
+कंजूस	miserly, mean
+काँटा	fork
+कामचोर	work-shy, lazy
+कि	or (for verbs)
+खीच	draw, take (photo)
+ख़ुद	oneself
+गर्व	pride
+गाय	cow, f
+गुस्से	angry
+चपरासी	peon, orderly, m
+चम्मच	spoon
+छुरी	knife
+ज़िम्मेदारी	responsibility
+झूठ	lie
+टेढ़ा	twisted, complex
+डेढ़	one and a half
+तुरंत	immediately
+दाम	price
+नही तो	otherwise
+निवेदन	request
+पड़	fall
+पता	address
+पुलिस	police, f, (no pl.)
+बार	time, occasion, f
+बोरियत	boredom, f
+भारी	heavy
+भूल	mistake, f
+मक्खी	a fly
+मगर	but, although, crocodile
+मदद	help, f
+मामला	matter, affair
+माहिर	expert, skilled
+यक़ीन	confidence, faith
+यदि	if, in case
+लिस्ट	list, f
+वक़्त	time
+विशवास	belief, confidence
+संभव	possible
+सफ़ाई	cleaning
+सलाह	advice, f
+सीढ़ी	stair, staircase
+हफ़्ता	week
+हाथ बँटा	lend a hand
+आनंद	joy, enjoyment
+आवश्यकता	necessity, f
+उँगली	finger, f
+उठा	pick up
+उघार	loan
+उपहार	present, gift
+क़ीमत	price, value, cost, f
+कैमरा	camera
+खोल	open
+गंगा	Ganges, f
+गिलास	tumbler (glass or metal)
+गीत	song
+गुजार	spend (time)
+घाट	(steps at) riverbank
+चोर	thief
+छूट	be left, fall back
+जारी	current, continuing
+ज़ेवर	(piece of) jewellery
+तमाशा	spectacle, show
+तेड़	break
+तोहफ़ा	a present
+दवा	medicine, f
+दुकानदार	shopkeeper
+दुर्घटना	accident, f
+नाक	nose, f
+नींद	sleep, f
+पढ़ाई	studies, studying
+परसों	day before yesterday, day after tomorrow
+पहन	put on, wear
+पाठ	lesson, chapter
+पेट	stomach
+प्याला	cup
+प्रसिद्ध	famous
+बज	resound, chime
+वाँह	(upper) arm, f
+वेच	sell
+भूत	ghost
+भेंट	gift, presentation, meeting, encounter, f
+मजबूरी	compulsion
+मज़ा	fun, pleasure, enjoyment
+मान	accept, believe
+माफी	forgiveness
+माली	gardener, m
+मीठा	sweet
+मुमकिन	possible, might be
+रो	weep, cry
+लाठी	lathi, stick
+शब्द	word
+शिकायत	complaint, f
+सुना	relate, tell, recite
+अंत	end
+अद्भुत	remarkable
+अवकाश	leisure, free time
+आवाज़	voice, sound, f
+कविता	poem, poetry, f
+कृपा	kindness, grace, f
+खेद	regret
+खो	lose
+चिढ़ा	irritate, tease
+छोड़कर	apart from, except for
+चान-बूझकर	deliberately
+जी-हुज़ूरी	sycophancy, flattery
+ढाई	two and a half
+दौड़	run
+धीमा	low, faint
+पश्ता	regret, repent
+परीक्षा	examination, f
+पार कर	cross
+पौना	three-quarters
+प्रकाशक	publisher
+बदमाश	villain, rogue
+बदल	change
+बाँट	divide, deal out
+भाभी	elder brother’s wife
+भोजन	food
+लेना-देना	dealings, connection
+विवाह	marriage
+विशेष	particular
+वैर	hostility
+समाचार	news
+सवा	one and a quarter, plus a quarter
+साढ़े	plus a half
+साथी	companion, friend, m
+साबुन	soap
+सेब	apple
+होकर	via
+अचीब	strange, odd
+अनबन	discord, f
+अभ्यास	practice
+आग	fire, f
+आगे	later, ahead
+कहला	be called, named
+फ़िस्मत	fate, f
+घंटी	bell
+चोट	hurt, injury, f
+चोरी	theft, robbery
+छाता	umbrella
+जवान	young, youthful, soldier
+ठंड	cold, f
+डाकू	dacoit, bandit
+डालना	to throw
+तताक़	divorce
+ताला	lock
+दिल लग	feel at home
+देन	contribution, gift, f
+नज़र	glance, look, f
+पक्का	ripe
+प्यास	thirst, f
+क़ुरसत	leisure, free time, f
+बदसूरत	ugly
+बरबाद कर	ruin
+बारिश	rain, f
+भूख	hunger, f
+भौंक	bark
+मर	die
+मूर्ख	fool
+रोज़	every day, daily
+लड़	to fight, quarrel
+लिफ़ाफ़ा	envelope
+वाक्य	sentence
+विचार	thought, idea, opinion
+विषय	subject
+शादी	marriage, wedding
+शिष्य	disciple

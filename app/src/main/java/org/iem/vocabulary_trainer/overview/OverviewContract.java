@@ -5,7 +5,7 @@ import java.util.List;
 interface OverviewContract {
 
     interface View {
-        boolean initLists(List<String> rightList, List<String> leftList);
+        boolean initLists(List<String> leftList, List<String> rightList);
     }
 
     interface Presenter {
