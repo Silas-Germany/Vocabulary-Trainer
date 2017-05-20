@@ -29,6 +29,10 @@ public class GlobalData extends Application {
                 }
             }
         });
+
+        if (!sDatabase.resetEvaluation()) {
+            Log.e(LOG_TAG, "Error reseting data evaluation");
+        }
     }
 
     // returns a minute-exact timestamp according to the system running time - that many minutes

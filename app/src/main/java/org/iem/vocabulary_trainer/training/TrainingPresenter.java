@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import org.iem.vocabulary_trainer.R;
 import org.iem.vocabulary_trainer.data.BasicVocabData;
+import org.iem.vocabulary_trainer.data.EvaluatedData;
 import org.iem.vocabulary_trainer.data.TrainingData;
 import org.iem.vocabulary_trainer.utils.GlobalData;
 
@@ -38,7 +39,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         if (GlobalData.sDatabase != null){
             for (BasicVocabData vocabData : GlobalData.sDatabase.getAllBasicVocabData()) {
                 TrainingData newEntry = new TrainingData();
-                newEntry.basicVocabData = vocabData;
+                newEntry.vocabData = vocabData;
                 mVocabData.add(newEntry);
             }
         }
@@ -53,24 +54,27 @@ class TrainingPresenter implements TrainingContract.Presenter {
             seedEntries();
             return;
         }
+        boolean trainingFinished = false;
         if (savedInstanceState != null) restoreVariables(savedInstanceState);
         else if (!checkForOldEntry()) {
             if (!addActualVocab()) {
                 if (!takeBestOldEntry()) {
                     Toast.makeText(mContext, mContext.getString(R.string.training_toast_all_done),
                             Toast.LENGTH_LONG).show();
-                    if (!mView.trainingFinished()) {
+                    if (!trainingFinished() || !mView.trainingFinished()) {
                         Log.e(LOG_TAG, "Error finishing training");
                     }
-                    return;
+                    trainingFinished = true;
                 }
             }
         }
         if (!mView.showAmountsOfBoxes(getAmountInBoxes(), BOXES_AMOUNT + 1)) {
             Log.e(LOG_TAG, "Error showing amount of boxes");
         }
-        if (!mView.writeVocab(getActualVocab().origin, false)) {
-            Log.e(LOG_TAG, "Error writing vocabulary");
+        if (!trainingFinished) {
+            if (!mView.writeVocab(getActualVocab().origin, false)) {
+                Log.e(LOG_TAG, "Error writing vocabulary");
+            }
         }
     }
 
@@ -111,7 +115,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         ArrayList<Integer> mistakes = new ArrayList<>();
         ArrayList<Integer> asked = new ArrayList<>();
         for (TrainingData entry : mVocabData) {
-            id.add(entry.basicVocabData.id);
+            id.add(entry.vocabData.id);
             box.add(entry.box);
             lastLearned.add(entry.lastLearned);
             mistakes.add(entry.mistakes);
@@ -139,11 +143,13 @@ class TrainingPresenter implements TrainingContract.Presenter {
         List<Integer> lastLearned = variables.getIntegerArrayList("lastLearned");
         List<Integer> mistakes = variables.getIntegerArrayList("mistakes");
         List<Integer> asked = variables.getIntegerArrayList("asked");
-        if (id.size() != box.size() ||
+        if (id == null || box == null || lastLearned == null ||
+                mistakes == null || asked == null ||
+                id.size() != box.size() ||
                 id.size() != lastLearned.size() ||
                 id.size() != mistakes.size() ||
                 id.size() != asked.size()) {
-            Log.e(LOG_TAG, "Error restoring variables. Not same amount");
+            Log.e(LOG_TAG, "Error restoring variables. Not existing / not same amount");
             return;
         }
         List<BasicVocabData> allVocabData = GlobalData.sDatabase.getAllBasicVocabData();
@@ -151,7 +157,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         for (BasicVocabData vocabData : allVocabData) {
             int index = id.indexOf(vocabData.id);
             TrainingData entry = new TrainingData();
-            entry.basicVocabData = vocabData;
+            entry.vocabData = vocabData;
             entry.box = box.get(index);
             entry.lastLearned = lastLearned.get(index);
             entry.mistakes = mistakes.get(index);
@@ -179,7 +185,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
 
     // returns actual vocabulary
     private BasicVocabData getActualVocab() {
-        return getActualVocabData().basicVocabData;
+        return getActualVocabData().vocabData;
     }
 
     // returns actual vocabulary-data
@@ -289,5 +295,36 @@ class TrainingPresenter implements TrainingContract.Presenter {
         newEntries.add(newEntry);
         GlobalData.sDatabase.saveBasicEntries(newEntries);
         Log.d(LOG_TAG, "New entries added");
+    }
+
+    private boolean trainingFinished() {
+        List<EvaluatedData> evaluatedDataList = GlobalData.sDatabase.getAllEvaluatedData();
+        for (TrainingData trainingData : mVocabData) {
+            // get fitting (same id) evaluating data
+            EvaluatedData evaluatedData = null;
+            for (EvaluatedData data : evaluatedDataList) {
+                if ((evaluatedData = data).vocabId == trainingData.vocabData.id) break;
+            }
+            if (evaluatedData == null) return false;
+            // save correctness
+            if (trainingData.mistakes > trainingData.asked) return false;
+            float actualCorrectness = 1 - (trainingData.mistakes / (float) trainingData.asked);
+            if (evaluatedData.correctness < 0 || evaluatedData.correctness > 1) {
+                evaluatedData.correctness = actualCorrectness;
+            }
+            else {
+                evaluatedData.correctness *= 0.8;
+                evaluatedData.correctness += actualCorrectness * 0.2;
+            }
+            // save box
+            if (trainingData.mistakes <= 2) evaluatedData.box--;
+            else evaluatedData.box++;
+            // save trained
+            evaluatedData.trained++;
+            // save date
+            evaluatedData.lastTrained = GlobalData.getTimestamp();
+        }
+        Log.d(LOG_TAG, "Vocabulary evaluated");
+        return GlobalData.sDatabase.updateEvaluatedData(evaluatedDataList);
     }
 }

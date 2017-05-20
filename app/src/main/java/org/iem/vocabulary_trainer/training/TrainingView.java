@@ -104,6 +104,7 @@ public class TrainingView extends Fragment implements TrainingContract.View {
         if (mBoxButtons.size() == 0) {
             if (!initBoxes(boxesAmount) || mBoxButtons.size() == 0) return false;
         }
+        if (amountInBoxes == null) return false;
         for (int i = 0; i < mBoxButtons.size(); i++) {
             mBoxButtons.get(i).setText(String.valueOf(amountInBoxes[i]));
         }
