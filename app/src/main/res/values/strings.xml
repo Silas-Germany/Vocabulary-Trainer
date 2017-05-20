@@ -4,6 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_item_training">Train Vocabulary</string>
+    <string name="navigation_item_overview">Show Vocabulary</string>
 
     <string name="training_show_answer">Show answer</string>
     <string name="training_toast_all_done">Training finished.\nAll vocabulary are in the highest box.</string>

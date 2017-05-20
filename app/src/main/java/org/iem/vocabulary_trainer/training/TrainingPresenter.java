@@ -160,7 +160,7 @@ class TrainingPresenter implements TrainingContract.Presenter {
         }
         mActualEntry = variables.getInt("actualEntry");
         mSumAskedEntries = variables.getInt("sumAskedEntries");
-        Log.d(LOG_TAG, "Variables restored" + mActualEntry + getActualVocab().origin);
+        Log.d(LOG_TAG, "Variables restored");
     }
 
     // adds a new vocab

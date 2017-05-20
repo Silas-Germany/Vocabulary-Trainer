@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 
 import org.iem.vocabulary_trainer.R;
+import org.iem.vocabulary_trainer.overview.OverviewView;
 import org.iem.vocabulary_trainer.training.TrainingView;
 
 public class NavigationDrawerActivity extends AppCompatActivity {
@@ -77,6 +78,12 @@ public class NavigationDrawerActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_frame, new TrainingView())
                         .commit();
+                break;
+            case R.id.item_overview:
+                if (getSupportFragmentManager() == null) return;
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, new OverviewView())
+                        .commit();
         }
     }
 
@@ -86,6 +93,9 @@ public class NavigationDrawerActivity extends AppCompatActivity {
         if (actualFragment instanceof TrainingView) {
             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_drawer);
             navigationView.setCheckedItem(R.id.item_training);
+        } else if (actualFragment instanceof OverviewView) {
+            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_drawer);
+            navigationView.setCheckedItem(R.id.item_overview);
         }
         minimizeKeyboard();
         Log.d(LOG_TAG, "Selected item updated");

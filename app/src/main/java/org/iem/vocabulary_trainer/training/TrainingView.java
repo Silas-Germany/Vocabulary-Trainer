@@ -65,6 +65,7 @@ public class TrainingView extends Fragment implements TrainingContract.View {
     // start training as soon as view is created
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Bundle variables = null;
         if (savedInstanceState != null) {
             variables = savedInstanceState.getBundle("variables");

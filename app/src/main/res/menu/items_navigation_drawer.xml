@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_check"
         android:title="@string/navigation_item_training" />
 
+    <item
+        android:id="@+id/item_overview"
+        android:icon="@drawable/ic_check"
+        android:title="@string/navigation_item_overview" />
+
 </menu>

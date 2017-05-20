@@ -2,7 +2,7 @@ package org.iem.vocabulary_trainer.training;
 
 import android.os.Bundle;
 
-class TrainingContract {
+interface TrainingContract {
 
     interface View {
         boolean writeVocab(String vocab, boolean isAnswer);
